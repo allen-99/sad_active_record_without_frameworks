@@ -22,47 +22,72 @@ def all_messages():
     return render_template('index.html', messages=json.loads(messages)['messages'])
 
 
-@app.route('/one_message', methods=['POST'])
+@app.route('/one_message', methods=['POST', 'GET'])
 def one_message():
     connection = get_connection()
     cursor = connection.cursor()
-    id_ = int(request.args.get('id'))
-    messages = Message.one_message_id(id_, cursor)
-    return messages
+
+    if request.method == 'POST':
+        if request.form.get('id') == '':
+            messages = Message.all_messages(cursor)
+            return render_template('delete_and_find_one.html', messages=json.loads(messages)['messages'])
+
+        id_ = int(request.form.get('id'))
+        messages = Message.one_message_id(id_, cursor)
+        return render_template('delete_and_find_one.html', messages=json.loads(messages)['messages'])
+
+    if request.method == 'GET':
+        messages = Message.all_messages(cursor)
+        return render_template('delete_and_find_one.html', messages=json.loads(messages)['messages'])
 
 
-@app.route('/some_messages', methods=['POST'])
+@app.route('/some_messages', methods=['POST', 'GET'])
 def some_messages():
     connection = get_connection()
     cursor = connection.cursor()
-    title_name = (request.args.get('title_name'))
-    title = (request.args.get('title'))
 
-    messages = Message.some_messages(title_name, title, cursor)
-    return messages
+    if request.method == 'POST':
+        title_name = (request.form.get('title_name'))
+        title = (request.form.get('title'))
+        try:
+            messages = Message.some_messages(title_name, title, cursor)
+        except:
+            messages = Message.all_messages(cursor)
+        return render_template('index.html', messages=json.loads(messages)['messages'])
+
+    if request.method == 'GET':
+        messages = Message.all_messages(cursor)
+        return render_template('index.html', messages=json.loads(messages)['messages'])
 
 
-@app.route('/save', methods=['POST'])
+@app.route('/save', methods=['POST', 'GET'])
 def save():
     connection = get_connection()
     cursor = connection.cursor()
     message = Message
-    message.title = (request.args.get('title'))
-    message.date = (request.args.get('date'))
-    message.message = (request.args.get('message'))
+    message.title = (request.form.get('title'))
+    message.date = (request.form.get('date'))
+    message.message = (request.form.get('message'))
 
     message().save(cursor, connection)
-    return json.dumps({'message': 'add successfully'})
+    return render_template('add_message.html')
 
 
-@app.route('/delete', methods=['POST'])
+@app.route('/delete', methods=['POST', 'GET'])
 def delete():
     connection = get_connection()
     cursor = connection.cursor()
-    id = (request.args.get('id'))
-    message = Message
-    message().delete(id, cursor, connection)
-    return json.dumps({'message': 'delete successfully'})
+    if request.method == 'POST':
+        if request.form.get('delete') == '':
+            messages = Message.all_messages(cursor)
+            return render_template('delete_and_find_one.html', messages=json.loads(messages)['messages'])
+        id_ = int(request.form.get('delete'))
+        messages = Message().delete(id_, cursor, connection)
+        return render_template('delete_and_find_one.html', messages=json.loads(messages)['messages'])
+
+    if request.method == 'GET':
+        messages = Message.all_messages(cursor)
+        return render_template('delete_and_find_one.html', messages=json.loads(messages)['messages'])
 
 
 if __name__ == '__main__':

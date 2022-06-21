@@ -9,8 +9,23 @@
     <title>Document</title>
 </head>
 <body>
+<form method="POST" action="/some_messages">
 {% block content %}
+     <div class="field">
+        <div class="control">
+            <input class="input is-large" type="text" name="title_name" placeholder="название колонки" autofocus="">
+        </div>
+    </div>
+    </form>
+     <div class="field">
+        <div class="control">
+            <input class="input is-large" type="text" name="title" placeholder="содержание колонки" autofocus="">
+        </div>
+    </div>
+
+    <button class="button is-block is-info is-large is-fullwidth">search message</button>
 {% for message in messages %}
+
     <div class="row my_message" style="border-radius: 0.5em;
                                     background-color: rgba(255,255,255, 0.2);
                                     padding: 10px;
@@ -25,5 +40,6 @@
     </div>
 {% endfor %}
 {% endblock %}
+
 </body>
 </html>
