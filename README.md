@@ -1,4 +1,4 @@
-# sad_active_record_without_frameworks
+
 # Просто лаба по работе с паттерном Active Record
 ## Запуск
 ### Установить зависимости из `requirements.txt` 
