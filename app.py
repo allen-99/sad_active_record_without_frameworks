@@ -34,10 +34,10 @@ def some_messages():
     if request.method == 'POST':
         title_name = (request.form.get('title_name'))
         title = (request.form.get('title'))
-        try:
-            messages = Message().some_messages(title_name, title)
-        except:
-            messages = Message().all_messages()
+        # try:
+        messages = Message().some_messages(title_name, title)
+        # except:
+        #     messages = Message().all_messages()
         return render_template('index.html', messages=json.loads(messages)['messages'])
 
     if request.method == 'GET':
@@ -47,12 +47,15 @@ def some_messages():
 
 @app.route('/save', methods=['POST', 'GET'])
 def save():
-    message = Message
-    message.title = (request.form.get('title'))
-    message.date = (request.form.get('date'))
-    message.message = (request.form.get('message'))
 
-    message().save()
+    message = Message
+    if request.method == 'POST':
+        message.title = (request.form.get('title'))
+        message.date = (request.form.get('date'))
+        message.message = (request.form.get('message'))
+
+        message().save()
+
     return render_template('add_message.html')
 
 
@@ -86,8 +89,8 @@ class Message:
 
     def __init__(self):
         self.connection_ = pymysql.connect(host='0.0.0.0',
-                                      user='руру',
-                                      password='руру',
+                                      user='hehe',
+                                      password='hehe',
                                       db='hmwk',
                                       charset='utf8mb4',
                                       cursorclass=pymysql.cursors.DictCursor)
@@ -103,16 +106,16 @@ class Message:
         return json.dumps({'messages': res})
 
     def one_message_id(self, id):
-        line = f"select * from messages where id = {id}"
-        self.cursor.execute(line)
+        line = "select * from messages where id = '{}'"
+        self.cursor.execute(line.format(int(id)))
         res = []
         for row in self.cursor:
             res.append(row)
         return json.dumps({'messages': res})
 
     def some_messages(self, title, title_name):
-        line = f"select * from messages where {title} = '{title_name}' "
-        self.cursor.execute(line)
+        line = "select * from messages where {} = '{}'"
+        self.cursor.execute(line.format(title, title_name))
         res = []
         for row in self.cursor:
             res.append(row)
@@ -125,11 +128,8 @@ class Message:
         for row in self.cursor:
             id_ = row['max(id)']
         id_ += 1
-        sql = f"insert into messages (id, title, message, date) values (" \
-              f"{id_}, " \
-              f"'{self.title}'," \
-              f"'{self.message}'," \
-              f"'{self.date}')"
+        sql = "insert into messages (id, title, message, date) values ('{}', '{}', '{}','{}')".\
+            format(id_, self.title, self.message, self.date)
 
         self.cursor.execute(sql)
         self.connection_.commit()
@@ -139,8 +139,8 @@ class Message:
         return json.dumps({'messages': res})
 
     def delete(self, id):
-        sql = f"delete from messages where id = {id}"
-        self.cursor.execute(sql)
+        line = "delete from messages where id = {}"
+        self.cursor.execute(line.format(int(id)))
         self.connection_.commit()
         res = []
         for row in self.cursor:
