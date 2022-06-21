@@ -86,8 +86,8 @@ class Message:
 
     def __init__(self):
         self.connection_ = pymysql.connect(host='0.0.0.0',
-                                      user='hehe',
-                                      password='hehe',
+                                      user='руру',
+                                      password='руру',
                                       db='hmwk',
                                       charset='utf8mb4',
                                       cursorclass=pymysql.cursors.DictCursor)
