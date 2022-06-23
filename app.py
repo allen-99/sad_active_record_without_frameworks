@@ -89,8 +89,8 @@ class Message:
 
     def __init__(self):
         self.connection_ = pymysql.connect(host='0.0.0.0',
-                                      user='e',
-                                      password='e',
+                                      user='руру',
+                                      password='руру',
                                       db='hmwk',
                                       charset='utf8mb4',
                                       cursorclass=pymysql.cursors.DictCursor)
@@ -124,10 +124,13 @@ class Message:
     def save(self):
         id_line = f"select max(id) from messages "
         self.cursor.execute(id_line)
-        id_ = -1
-        for row in self.cursor:
-            id_ = row['max(id)']
-        id_ += 1
+        id_ = 0
+        try:
+            for row in self.cursor:
+                id_ = row['max(id)']
+            id_ += 1
+        except:
+            id_ = 0
         sql = "insert into messages (id, title, message, date) values ('{}', '{}', '{}','{}')".\
             format(id_, self.title, self.message, self.date)
 
